@@ -22,7 +22,23 @@ function getBrowser() {
   if (!browserPromise) {
     browserPromise = puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      // Memory-reduction flags to help a single Chromium fit in a 512 MB
+      // host (e.g. Render's free tier) by trimming features we never use for
+      // rendering a static receipt page to PDF.
+      // NOTE: do NOT add --single-process — it crashes Page.printToPDF
+      // ("Target closed"), breaking PDF generation entirely.
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--disable-extensions',
+        '--disable-background-networking',
+        '--disable-default-apps',
+        '--disable-sync',
+        '--mute-audio',
+        '--no-first-run',
+      ],
     });
     browserPromise.catch(() => {
       browserPromise = null; // allow retry on next request if launch failed
