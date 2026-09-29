@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>POS Reconciliation Uploader</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon.svg" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1>POS Reconciliation</h1>
+    <div id="signin-area">
+      <button id="signin-btn" class="btn btn-outline">Sign in with Google</button>
+      <span id="signed-in-email" class="email-badge" hidden></span>
+    </div>
+  </header>
+
+  <main>
+    <section id="config-panel" class="card" hidden>
+      <h2>Setup required</h2>
+      <p>Add your Google OAuth Client ID in <code>public/app.js</code> (the
+        <code>GOOGLE_CLIENT_ID</code> constant) before this app can sign in to Google Drive.
+        See README.md for the exact steps.</p>
+    </section>
+
+    <section id="scan-panel" class="card">
+      <h2>1. Scan the terminal's QR code</h2>
+      <p class="hint">Open this after day closure and scan the reconciliation QR on the terminal screen.</p>
+      <button id="start-scan-btn" class="btn btn-primary">Open Camera &amp; Scan</button>
+      <div id="qr-reader" class="qr-reader"></div>
+      <button id="stop-scan-btn" class="btn btn-outline" hidden>Cancel Scan</button>
+      <p id="scan-status" class="status"></p>
+    </section>
+
+    <section id="review-panel" class="card" hidden>
+      <h2>2. Review &amp; save</h2>
+      <div class="field">
+        <label for="field-vendor">Terminal system</label>
+        <input id="field-vendor" type="text" disabled />
+      </div>
+      <div class="field">
+        <label for="field-date">Reconciliation date</label>
+        <input id="field-date" type="date" />
+      </div>
+      <div class="field">
+        <label for="field-terminal">Terminal ID</label>
+        <input id="field-terminal" type="text" inputmode="numeric" />
+      </div>
+      <div class="field">
+        <label for="field-filename">File name in Drive</label>
+        <input id="field-filename" type="text" />
+      </div>
+      <p id="review-warning" class="warning" hidden>
+        Could not confidently read the date/terminal ID from this receipt — please check and
+        correct the fields above before saving.
+      </p>
+      <div class="pdf-preview-wrap">
+        <iframe id="pdf-preview" class="pdf-preview" title="Receipt PDF preview"></iframe>
+      </div>
+      <div class="actions">
+        <button id="save-btn" class="btn btn-primary">Save to Google Drive</button>
+        <button id="discard-btn" class="btn btn-outline">Discard &amp; Scan Again</button>
+      </div>
+      <p id="save-status" class="status"></p>
+    </section>
+
+    <section id="history-panel" class="card">
+      <h2>Recently saved (this device)</h2>
+      <ul id="history-list" class="history-list"></ul>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
